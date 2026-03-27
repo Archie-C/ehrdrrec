@@ -1,0 +1,66 @@
+# python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.installed.cfg
+lib/
+lib64/
+sdist/
+wheels/
+share/python-wheels/
+*.egg-link
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Ruff / Mypy caches
+.ruff_cache/
+.mypy_cache/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# EHR data — never commit real patient data
+data/raw/
+data/processed/
+*.csv
+*.parquet
+*.feather
+*.h5
+*.hdf5
+
+# Artefacts and experiment outputs — can be large
+artefacts/
+outputs/
+runs/
+mlruns/
+wandb/
+checkpoints/
+*.ckpt
+*.pt
+
+# Config with secrets (keep example configs, not real ones)
+config/local*.yaml
+config/local*.toml
+.env
+.env.*
