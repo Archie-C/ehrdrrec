@@ -122,3 +122,8 @@ exclude_lines = [
     "@abstractmethod",
     "raise NotImplementedError",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.8",
+]
