@@ -1,16 +1,13 @@
-# src/ehrdrec/data/canonical.py
+# src/ehrdrec/preprocessing/canonical.py
 """
-Canonical Polars schema for multi-label drug recommendation.
+Canonical Polars schema for multi-label drug recommendation using multi-hot vectors.
 
-Every loader (MIMIC-III, MIMIC-IV, eICU, custom) must produce a DataFrame
+Every preprocessor must produce a DataFrame
 that conforms to this schema. Validation is enforced in validation.py.
 
 Design decisions
 ----------------
 -   One row per visit, not per patient
--   Clinical codes are stored as List[str] columns apart from medication
-    where they are stored as structs in order to retain information
--   Medication codes are dataset specific
 -   visit_index is 0-based
 -   Timestamps are kept as Polars Datetime rather than strings so
     duration/gap features can be derived without reparsing.
@@ -19,8 +16,6 @@ Design decisions
 from __future__ import annotations
 
 import polars as pl
-
-# TODO: Decide if this is even the best option
 
 # --------------------------------------------------------------
 # Column name constants
@@ -31,16 +26,12 @@ HADM_ID      = "hadm_id"            # str  — unique visit/admission identifier
 VISIT_INDEX  = "visit_index"        # i32  — 0-based visit order per patient
 ADMIT_TIME   = "admit_time"         # Datetime[us, UTC]
 DISCHARGE_TIME = "discharge_time"   # Datetime[us, UTC]  (nullable)
-DIAGNOSES    = "diagnoses"          # List[str]  — diagnoses ordered by seq_num
-PROCEDURES   = "procedures"         # List[struct]  — procedure objects
-MEDICATIONS  = "medications"        # List[struct]  — medication objects
+DIAGNOSES    = "diagnoses"          # List[int]  — multi-hot diagnoses
+PROCEDURES   = "procedures"         # List[int]  — multi-hot procedures
+MEDICATIONS  = "medications"        # List[int]  — multi-hot medications
 
 # nullable columns
 DEATH_TIME = "death_time"           # Datetime[us, UTC]  (nullable)
-
-# ---------------------------------------------------------------
-# The schema
-# ---------------------------------------------------------------
 
 CANONICAL_SCHEMA: dict[str, pl.DataType] = {
     SUBJECT_ID:      pl.Utf8,
@@ -48,13 +39,13 @@ CANONICAL_SCHEMA: dict[str, pl.DataType] = {
     VISIT_INDEX:     pl.Int32,
     ADMIT_TIME:      pl.Datetime("us", "UTC"),
     DISCHARGE_TIME:  pl.Datetime("us", "UTC"),   # nullable
-    DIAGNOSES:       pl.List(pl.Utf8),
-    PROCEDURES:      pl.List(pl.Utf8),
-    MEDICATIONS:     pl.List(pl.Struct),
+    DIAGNOSES:       pl.List(pl.Int32),
+    PROCEDURES:      pl.List(pl.Int32),
+    MEDICATIONS:     pl.List(pl.Int32),
     DEATH_TIME:      pl.Datetime("us", "UTC") # nullable
 }
 
-# Columns that every loader MUST produce (others are optional)
+# Columns that every preprocessor of this type MUST produce (others are optional)
 REQUIRED_COLUMNS: frozenset[str] = frozenset({
     SUBJECT_ID,
     HADM_ID,
